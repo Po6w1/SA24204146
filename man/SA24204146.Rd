@@ -24,9 +24,9 @@
   Maintainer: Zheng Gong <gongzheng@mail.ustc.edu.cn>
 }
 \references{
-  Bai, Z. D., & Silverstein, J. W. (2010). Spectral Analysis of Large Dimensional Random Matrices. Springer.
-
   Marčenko, V. A., & Pastur, L. A. (1967). Distribution of eigenvalues for some sets of random matrices. *Mathematics of the USSR-Sbornik*, *1*(4), 457–483.
+
+  Bai, Z. D., & Silverstein, J. W. (2010). Spectral Analysis of Large Dimensional Random Matrices. Springer.
 }
 \keyword{ package }
 \examples{
