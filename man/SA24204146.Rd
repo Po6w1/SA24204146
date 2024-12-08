@@ -5,17 +5,17 @@
   Analysis and Simulation of High-Dimensional Random Matrices
 }
 \description{
-  The \code{SA24204146} package provides tools for generating, analyzing, and simulating high-dimensional random matrices. It includes functionalities for computing eigenvalues, analyzing spectral densities, comparing empirical results with theoretical predictions (e.g., Marčenko-Pastur law), and efficiently computing condition numbers using \code{Rcpp} and \code{RcppEigen}.
+  The \code{SA24204146} package provides tools for generating, analyzing, and simulating high-dimensional random matrices. It includes functionalities for computing eigenvalues, analyzing spectral densities, comparing empirical results with theoretical predictions (e.g., Marčenko-Pastur law), and efficiently computing diagonal dominance using \code{Rcpp} and \code{RcppEigen}.
 }
 \details{
-  This package is designed for researchers and students interested in random matrix theory and its applications. It combines computational efficiency (via Rcpp and Eigen) with detailed statistical analysis of eigenvalue distributions and condition numbers in high-dimensional settings.
+  This package is designed for researchers and students interested in random matrix theory and its applications. It combines computational efficiency (via Rcpp and Eigen) with detailed statistical analysis of eigenvalue distributions and diagonal dominance in high-dimensional settings.
 
   Key features include:
   \itemize{
     \item Simulation of random matrices with configurable dimensions and distributions.
     \item Computation and visualization of empirical spectral densities (ESD) compared to theoretical densities like Marčenko-Pastur.
     \item Kernel-based density estimation for eigenvalue distributions.
-    \item Efficient computation of condition numbers for covariance matrices using \code{Rcpp}.
+    \item Efficient computation of diagonal dominance for covariance matrices using \code{Rcpp}.
   }
 }
 \author{
@@ -30,7 +30,5 @@
 }
 \keyword{ package }
 \examples{
-  \dontrun{
-    ##
-  }
+  analyze_random_matrix_spectrum(n = 500, p = 400)
 }
