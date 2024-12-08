@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="SA24204146" />
+
+<meta name="date" content="2024-12-08" />
+
+<title>Introduction to the High-Dimensional Random Matrix Package</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to the High-Dimensional Random
+Matrix Package</h1>
+<h4 class="author">SA24204146</h4>
+<h4 class="date">2024-12-08</h4>
+
+
+
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>The <code>SA24204146</code> package provides a collection of
+functions designed to analyze the spectrum of high-dimensional random
+matrices and simulate matrix properties such as diagonal dominance.
+These functions are useful for applications in random matrix theory and
+high-dimensional data analysis.</p>
+<div id="features" class="section level2">
+<h2>Features</h2>
+<ul>
+<li><strong><code>analyze_random_matrix_spectrum</code></strong>:
+Analyzes the spectrum of a random matrix, including eigenvalue
+distributions and the Marcenko-Pastur density.</li>
+<li><strong><code>monte_carlo_diagonal_dominance</code></strong>:
+Performs Monte Carlo simulations to estimate the proportion of
+diagonally dominant rows in random matrices.</li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="functionality" class="section level1">
+<h1>Functionality</h1>
+<div id="random_matrix_analysis" class="section level2">
+<h2><code>random_matrix_analysis</code></h2>
+<div id="function-description" class="section level3">
+<h3><strong>Function Description</strong></h3>
+<p><code>random_matrix_analysis</code> is a function (for illustrative
+purposes) that would provide a comprehensive analysis of random matrix
+properties, including eigenvalue distributions, singular value
+decompositions, and other relevant metrics. This function has yet to be
+implemented in the package.</p>
+</div>
+<div id="example-usage" class="section level3">
+<h3><strong>Example Usage</strong>:</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Example usage of random_matrix_analysis function (this is illustrative)</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">random_matrix_analysis</span>(<span class="at">n =</span> <span class="dv">100</span>, <span class="at">p =</span> <span class="dv">80</span>)</span></code></pre></div>
+<hr />
+</div>
+</div>
+<div id="analyze_random_matrix_spectrum" class="section level2">
+<h2><code>analyze_random_matrix_spectrum</code></h2>
+<div id="function-description-1" class="section level3">
+<h3><strong>Function Description</strong></h3>
+<p>The <code>analyze_random_matrix_spectrum</code> function computes the
+eigenvalues of a random matrix and compares the empirical spectral
+density to the theoretical Marcenko-Pastur distribution. It optionally
+plots the results for visual comparison.</p>
+<ul>
+<li><strong>Inputs</strong>:
+<ul>
+<li><code>n</code>: Number of rows in the random matrix.</li>
+<li><code>p</code>: Number of columns in the random matrix.</li>
+<li><code>mean</code>: Mean of the random entries (default is 0).</li>
+<li><code>sd</code>: Standard deviation of the random entries (default
+is 1).</li>
+<li><code>bandwidth</code>: Bandwidth parameter for kernel density
+estimation (default is 0.1).</li>
+<li><code>plot</code>: Whether to plot the results (default is
+TRUE).</li>
+</ul></li>
+<li><strong>Outputs</strong>:
+<ul>
+<li>A list containing the eigenvalues, the Marcenko-Pastur density, and
+the kernel density estimate.</li>
+</ul></li>
+</ul>
+</div>
+<div id="example-usage-1" class="section level3">
+<h3><strong>Example Usage</strong>:</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(SA24204146)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># Analyze the spectrum of a random matrix with 500 rows and 400 columns</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">analyze_random_matrix_spectrum</span>(<span class="at">n =</span> <span class="dv">500</span>, <span class="at">p =</span> <span class="dv">400</span>)</span></code></pre></div>
+<hr />
+</div>
+</div>
+</div>
+<div id="visualizations" class="section level1">
+<h1>Visualizations</h1>
+<div id="example-plot" class="section level3">
+<h3><strong>Example Plot</strong>:</h3>
+<p>Here is an example plot generated by the
+<code>analyze_random_matrix_spectrum</code> function, which shows the
+comparison between the empirical kernel density estimate and the
+theoretical Marcenko-Pastur distribution.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Example plot generated by the analyze_random_matrix_spectrum function</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">plot</span>(result<span class="sc">$</span>kernel_density, <span class="at">main =</span> <span class="st">&quot;Spectral Density of Random Matrix&quot;</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Eigenvalue&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Density&quot;</span>, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">seq</span>(result<span class="sc">$</span>mp_density<span class="sc">$</span>lambda_min, result<span class="sc">$</span>mp_density<span class="sc">$</span>lambda_max, <span class="at">length.out =</span> <span class="dv">1000</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>      <span class="fu">sapply</span>(<span class="fu">seq</span>(result<span class="sc">$</span>mp_density<span class="sc">$</span>lambda_min, result<span class="sc">$</span>mp_density<span class="sc">$</span>lambda_max, <span class="at">length.out =</span> <span class="dv">1000</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>             result<span class="sc">$</span>mp_density), <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Empirical (KDE)&quot;</span>, <span class="st">&quot;Marcenko-Pastur&quot;</span>),</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;blue&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span></code></pre></div>
+<hr />
+</div>
+</div>
+<div id="implementation-details" class="section level1">
+<h1>Implementation Details</h1>
+<div id="rcpp-integration" class="section level3">
+<h3>Rcpp Integration</h3>
+<p>The package utilizes <code>Rcpp</code> to optimize matrix
+computations, particularly for the calculation of diagonal dominance in
+random matrices. Below is the C++ implementation for calculating the
+proportion of diagonally dominant rows in a matrix.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;RcppArmadillo.h&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">// [[Rcpp::export]]</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="dt">double</span> diagonal_dominance_cpp<span class="op">(</span><span class="at">const</span> Rcpp<span class="op">::</span>NumericMatrix<span class="op">&amp;</span> mat<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="co">// Convert Rcpp matrix to Armadillo matrix</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  arma<span class="op">::</span>mat A <span class="op">=</span> Rcpp<span class="op">::</span>as<span class="op">&lt;</span>arma<span class="op">::</span>mat<span class="op">&gt;(</span>mat<span class="op">);</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  </span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="co">// Check if the matrix is square</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>A<span class="op">.</span>n_rows <span class="op">!=</span> A<span class="op">.</span>n_cols<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>    Rcpp<span class="op">::</span>stop<span class="op">(</span><span class="st">&quot;Input matrix must be square.&quot;</span><span class="op">);</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  </span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  <span class="dt">int</span> n <span class="op">=</span> A<span class="op">.</span>n_rows<span class="op">;</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="dt">int</span> dominant_rows <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> <span class="co">// Count of diagonally dominant rows</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> <span class="op">++</span>i<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>    <span class="dt">double</span> diag_value <span class="op">=</span> <span class="bu">std::</span>abs<span class="op">(</span>A<span class="op">(</span>i<span class="op">,</span> i<span class="op">));</span> <span class="co">// Absolute value of diagonal element</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>    <span class="dt">double</span> row_sum <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> j <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> j <span class="op">&lt;</span> n<span class="op">;</span> <span class="op">++</span>j<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>      <span class="cf">if</span> <span class="op">(</span>i <span class="op">!=</span> j<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>        row_sum <span class="op">+=</span> <span class="bu">std::</span>abs<span class="op">(</span>A<span class="op">(</span>i<span class="op">,</span> j<span class="op">));</span> <span class="co">// Sum of absolute values of off-diagonal elements</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>    <span class="co">// Check diagonal dominance</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>diag_value <span class="op">&gt;</span> row_sum<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>      dominant_rows<span class="op">++;</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>  <span class="co">// Return the proportion of diagonally dominant rows</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>  <span class="cf">return</span> <span class="kw">static_cast</span><span class="op">&lt;</span><span class="dt">double</span><span class="op">&gt;(</span>dominant_rows<span class="op">)</span> <span class="op">/</span> n<span class="op">;</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>This function calculates the proportion of diagonally dominant rows
+in a square matrix by checking if the absolute value of the diagonal
+element in each row exceeds the sum of the absolute values of the
+off-diagonal elements.</p>
+<hr />
+</div>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<p>The <code>SA24204146</code> package offers powerful tools for
+analyzing high-dimensional random matrices, particularly in terms of
+their spectral properties and diagonal dominance. By leveraging
+<code>Rcpp</code> for performance optimization, the package ensures
+efficient handling of large matrices, making it a valuable tool for
+researchers and practitioners working in random matrix theory and
+high-dimensional data analysis.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

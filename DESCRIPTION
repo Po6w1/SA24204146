@@ -1,0 +1,18 @@
+Package: SA24204146
+Type: Package
+Title: Analysis and Simulation of High-Dimensional Random Matrices
+Version: 1.0
+Date: 2024-11-25
+Author: Zheng Gong
+Maintainer: Zheng Gong <gongzheng@mail.ustc.edu.cn>
+Description: Provides tools for generating, analyzing, and simulating high-dimensional random matrices.
+License: GPL (>= 2)
+Imports: Rcpp, stats, graphics, ggplot2
+Suggests: knitr, rmarkdown, MASS, BB, DAAG, RVAideMemoire, boot, bootstrap, mediation, microbenchmark, bench, coda, fastmatch
+VignetteBuilder: knitr
+LinkingTo: Rcpp, RcppArmadillo 
+RoxygenNote: 7.3.2
+Encoding: UTF-8
+LazyData: true
+URL: http://github.com/po6w1/StatComp
+BugReports: http://github.com/po6w1/StatComp/issues
