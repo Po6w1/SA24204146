@@ -14,5 +14,5 @@ LinkingTo: Rcpp, RcppArmadillo
 RoxygenNote: 7.3.2
 Encoding: UTF-8
 LazyData: true
-URL: http://github.com/po6w1/StatComp
-BugReports: http://github.com/po6w1/StatComp/issues
+URL: http://github.com/po6w1/SA24204146
+BugReports: http://github.com/po6w1/SA24204146/issues
